@@ -41,8 +41,15 @@ if "jobs" in st.session_state:
                 job_data = st.session_state["jobs"][i]['MatchedObjectDescriptor']
                 with st.spinner(f"Applying to: {job_data.get('PositionTitle')}"):
                     #st.markdown(f"{job_data.get('PositionTitle')}")
-                    result = run_pipeline(job_data)
+                    result = run_pipeline(job_data, resume_text, user_bio)
                     st.markdown("---")
                     st.markdown(f"### The reach-out message for: {job_data.get('PositionTitle')}")
-                    st.markdown(result)
+                    st.markdown("#### Resume Summary")
+                    st.text(result["resume_summary"])
+
+                    st.markdown("#### Cover Letter")
+                    st.text(result["cover_letter"])
+
+                    st.markdown("#### Outreach Message")
+                    st.text(result["outreach_message"])
 

@@ -16,19 +16,23 @@ def get_messaging_agent():
         goal="Draft personalized messages for job outreach",
         backstory="You're a professional career coach skilled in writing effective cold emails and outreach messages for job seekers in tech and government."
     )
-def create_messaging_task(agent, job_summary, agency_name, user_bio):
+def create_messaging_task(agent, jd_summary, agency_name, user_bio):
     return Task(
-        description= f"""
-        Write a concise, compelling and professional outreach message that the candidate could send to someone at {agency_name}, expressing interest in the job described below.
+        description=f"""
+        Write a friendly and professional outreach message.
 
-        --- Job Summary ---
-        {job_summary}
+        Agency: {agency_name}
 
-        --- Candidate Bio ---
+        Job Summary:
+        {jd_summary}
+
+        Candidate Bio:
         {user_bio}
 
-        The message should be friendly, professional, and under 150 words. Tailor it for a platform like LinkedIn or email.
+        Constraints:
+        - Under 120 words
+        - Suitable for LinkedIn or email
         """,
-        expected_output = "A short outreach message under 150 words, tailored for LinkedIn or email, that is professional and expresses interest in the job at the given agency.",
-        agent = agent
+        agent=agent,
+        expected_output="A short professional outreach message."
     )

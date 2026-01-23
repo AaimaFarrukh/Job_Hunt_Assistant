@@ -29,15 +29,34 @@ def run_pipeline(job_data, resume_text, user_bio):
     messaging_agent = get_messaging_agent()
 
     jd_task = create_jd_analysis_task(jd_agent, job_summary)
-    resume_task = create_resume_cl_task(resume_agent,job_summary, resume_text)
-    messaging_task = create_messaging_task(messaging_agent, job_summary,agency_name, user_bio)
 
-    crew = Crew(
-        agents=[jd_agent, resume_agent, messaging_agent],
-        tasks= [jd_task, resume_task, messaging_task],
+
+    jd_crew = Crew(
+        agents=[jd_agent],
+        tasks= [jd_task],
         process = Process.sequential
     )
-    result = crew.kickoff()
+    jd_result = jd_crew.kickoff()
+    jd_summary = extract_between_markers(jd_result, "<<JD_SUMMARY>>")
+
+    resume_task = create_resume_cl_task(resume_agent,jd_summary, resume_text)
+    resume_crew = Crew(
+    agents=[resume_agent],
+    tasks=[resume_task],
+    process=Process.sequential
+)
+
+    resume_result = resume_crew.kickoff()
+
+    messaging_task = create_messaging_task(messaging_agent, jd_summary,agency_name, user_bio)
+    message_crew = Crew(
+    agents=[messaging_agent],
+    tasks=[messaging_task],
+    process=Process.sequential
+    )
+
+    message_result = message_crew.kickoff()
+
     resume_output = str(resume_task.output)
     resume_summary = extract_between_markers(resume_output, "<<RESUME_SUMMARY>>", "<<COVER_LETTER>>")
     cover_letter = extract_between_markers(resume_output, "<<COVER_LETTER>>")
@@ -46,9 +65,12 @@ def run_pipeline(job_data, resume_text, user_bio):
     save_cover_letter_file(job_title, cover_letter)
 
     print("\n=== FINAL OUTPUT ===\n")
+    result = {
+    "jd_summary": jd_summary,
+    "resume_summary": resume_summary,
+    "cover_letter": cover_letter,
+    "message": message_result
+    }
     print(result)
 
     return result
-
-if __name__ == "__main__":
-    run_pipeline()

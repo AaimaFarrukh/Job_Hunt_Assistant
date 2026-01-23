@@ -16,28 +16,28 @@ def get_resume_cl_agent():
         llm =llm,
         verbose= True
     )
-def create_resume_cl_task(agent, job_summary,resume_text):
+def create_resume_cl_task(agent, jd_summary,resume_text):
     return Task(
         description=f"""
-        Based on the job summary below, tailor the candidate's resume summary and generate a personalized cover letter.
-        
-        --- Job Summary ---
-        {job_summary}
-        
-        --- Resume Text ---
-        {resume_text}
-        
-        Your output should include:
-        1. Updated professional summary for resume
-        2. A personalized cover letter suitable for a government job
+        Using the job summary below, tailor the candidate's application.
+
+        Job Summary:
+        {jd_summary}
+
+        Candidate Resume:
+        {resume_text[:700]}
+
+        Generate:
+        1. Resume professional summary (3–4 lines)
+        2. Short government-style cover letter
         """,
-        agent=agent,
-        expected_output="""
+                expected_output="""
         <<RESUME_SUMMARY>>
-        [Your tailored 3-5 sentence resume summary here]
+        ...
 
         <<COVER_LETTER>>
-        [Your personalized cover letter here]
+        ...
         """,
+                agent=agent,
         output_file='/data/resume_agent_output.txt'
     )
