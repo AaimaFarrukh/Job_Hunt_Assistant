@@ -37,7 +37,8 @@ def run_pipeline(job_data, resume_text, user_bio):
         process = Process.sequential
     )
     jd_result = jd_crew.kickoff()
-    jd_summary = extract_between_markers(jd_result, "<<JD_SUMMARY>>")
+    jd_summary = extract_between_markers(str(jd_result), "<<JD_SUMMARY>>")
+
 
     resume_task = create_resume_cl_task(resume_agent,jd_summary, resume_text)
     resume_crew = Crew(
